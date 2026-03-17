@@ -42,6 +42,16 @@ interface AuthState {
   googleLogin: (data: TokenData) => Promise<boolean>;
 }
 
+const setAuthCookies = (token: string, role: string) => {
+  document.cookie = `accessToken=${token}; path=/; SameSite=Lax`;
+  document.cookie = `role=${role}; path=/; SameSite=Lax`;
+};
+
+const clearAuthCookies = () => {
+  document.cookie = "accessToken=; Max-Age=0; path=/";
+  document.cookie = "role=; Max-Age=0; Max-Age=0; path=/";
+};
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
@@ -50,7 +60,6 @@ export const useAuthStore = create<AuthState>()(
       error: null,
       fieldErrors: null,
 
-      // LOGIN
       login: async (data: LoginData) => {
         set({ loading: true, error: null, fieldErrors: null });
 
@@ -60,7 +69,7 @@ export const useAuthStore = create<AuthState>()(
           const token = res.data.data.access_token;
           const user = res.data.data.user;
 
-          localStorage.setItem("accessToken", token);
+          setAuthCookies(token, user.role);
 
           set({
             user,
@@ -71,16 +80,8 @@ export const useAuthStore = create<AuthState>()(
 
           return true;
         } catch (err: any) {
-          let message = "Login failed";
-          let fields = null;
-
-          if (err.response?.data?.errors) {
-            fields = err.response.data.errors;
-          }
-
-          if (err.response?.data?.message) {
-            message = err.response.data.message;
-          }
+          const message = err.response?.data?.message || "Login failed";
+          const fields = err.response?.data?.errors || null;
 
           set({
             error: message,
@@ -92,7 +93,6 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // REGISTER
       register: async (data: RegisterData) => {
         set({ loading: true, error: null, fieldErrors: null });
 
@@ -107,16 +107,8 @@ export const useAuthStore = create<AuthState>()(
 
           return true;
         } catch (err: any) {
-          let message = "Registration failed";
-          let fields = null;
-
-          if (err.response?.data?.errors) {
-            fields = err.response.data.errors;
-          }
-
-          if (err.response?.data?.message) {
-            message = err.response.data.message;
-          }
+          const message = err.response?.data?.message || "Registration failed";
+          const fields = err.response?.data?.errors || null;
 
           set({
             error: message,
@@ -128,7 +120,6 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // VERIFY EMAIL
       verifyEmail: async (data: TokenData) => {
         set({ loading: true, error: null });
 
@@ -151,53 +142,62 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // FORGOT PASSWORD
       forgotPassword: async (data: EmailData) => {
         set({ loading: true, error: null, fieldErrors: null });
+
         try {
           await forgotPasswordAPI(data);
+
           set({ loading: false, error: null, fieldErrors: null });
           return true;
         } catch (err: any) {
-          const fields = err.response?.data?.errors ?? null;
           const message =
-            err.response?.data?.message ?? "Forgot password failed";
-          set({ loading: false, error: message, fieldErrors: fields });
+            err.response?.data?.message || "Forgot password failed";
+          const fields = err.response?.data?.errors || null;
+
+          set({
+            loading: false,
+            error: message,
+            fieldErrors: fields,
+          });
+
           return false;
         }
       },
 
-      // RESET PASSWORD
       resetPassword: async (data: ResetPasswordData) => {
         set({ loading: true, error: null, fieldErrors: null });
+
         try {
           await resetPasswordAPI(data);
+
           set({ loading: false, error: null, fieldErrors: null });
           return true;
         } catch (err: any) {
-          const fields = err.response?.data?.errors ?? null;
           const message =
-            err.response?.data?.message ?? "Reset password failed";
-          set({ loading: false, error: message, fieldErrors: fields });
+            err.response?.data?.message || "Reset password failed";
+          const fields = err.response?.data?.errors || null;
+
+          set({
+            loading: false,
+            error: message,
+            fieldErrors: fields,
+          });
+
           return false;
         }
       },
 
-      // GOOGLE
-      googleLogin: async (data: { token: string }) => {
+      googleLogin: async (data: TokenData) => {
         set({ loading: true, error: null, fieldErrors: null });
 
         try {
           const res = await googleAPI(data);
 
-          console.log(res);
-
           const token = res.data.data.access_token;
           const user = res.data.data.user;
 
-          console.log(res);
-
-          localStorage.setItem("accessToken", token);
+          setAuthCookies(token, user.role);
 
           set({
             user,
@@ -208,16 +208,8 @@ export const useAuthStore = create<AuthState>()(
 
           return true;
         } catch (err: any) {
-          let message = "Google login failed";
-          let fields = null;
-
-          if (err.response?.data?.errors) {
-            fields = err.response.data.errors;
-          }
-
-          if (err.response?.data?.message) {
-            message = err.response.data.message;
-          }
+          const message = err.response?.data?.message || "Google login failed";
+          const fields = err.response?.data?.errors || null;
 
           set({
             error: message,
@@ -229,17 +221,16 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // LOGOUT
       logout: async () => {
         set({ loading: true });
 
         try {
           await logoutAPI();
-        } catch (err) {
-          console.warn("Logout request failed");
+        } catch {
+          console.warn("Logout API failed");
         }
 
-        localStorage.removeItem("accessToken");
+        clearAuthCookies();
 
         set({
           user: null,
