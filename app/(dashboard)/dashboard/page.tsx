@@ -10,7 +10,9 @@ export default function DashboardPage() {
         <ChartAreaInteractive />
       </div>
 
-      <h1>Welcome DODO 🚀</h1>
+      <div className="px-4 lg:px-6">
+        <ChartAreaInteractive />
+      </div>
     </>
   );
 }

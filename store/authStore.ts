@@ -231,6 +231,7 @@ export const useAuthStore = create<AuthState>()(
         }
 
         clearAuthCookies();
+        localStorage.removeItem("auth-storage");
 
         set({
           user: null,

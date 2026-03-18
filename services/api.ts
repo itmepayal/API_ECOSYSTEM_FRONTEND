@@ -3,8 +3,18 @@
 import { env } from "@/env";
 import axios from "axios";
 
+const getCookie = (name: string) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(";").shift();
+};
+
+const setCookie = (name: string, value: string) => {
+  document.cookie = `${name}=${value}; path=/; SameSite=Lax`;
+};
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: env.NEXT_PUBLIC_API_BASE_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -13,7 +23,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
+    const token = getCookie("accessToken");
 
     if (token) {
       config.headers = config.headers || {};
@@ -25,7 +35,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// RESPONSE INTERCEPTOR
 api.interceptors.response.use(
   (response) => response,
 
@@ -41,16 +50,16 @@ api.interceptors.response.use(
           {},
           { withCredentials: true }
         );
+
         const newAccessToken = res.data.data.access_token;
 
-        localStorage.setItem("accessToken", newAccessToken);
+        setCookie("accessToken", newAccessToken);
 
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
         return api(originalRequest);
       } catch (refreshError) {
-        localStorage.removeItem("accessToken");
-
+        document.cookie = "accessToken=; Max-Age=0; path=/";
         window.location.href = "/login";
 
         return Promise.reject(refreshError);
