@@ -1,67 +1,56 @@
-"use client";
-
-import { ColumnDef } from "@tanstack/react-table";
+import { CategoryDialog } from "@/components/dashboard/categories/category-dialog";
+import { CategoryFormValues } from "@/components/dashboard/categories/category-form";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { IconPencil, IconTrash } from "@tabler/icons-react";
 
-export type Category = {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  is_active: boolean;
-};
-
-export const columns: ColumnDef<Category>[] = [
-  {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }) => (
-      <span className="text-xs text-muted-foreground">{row.original.id}</span>
-    ),
-  },
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => (
-      <div className="max-w-62.5 truncate">{row.original.description}</div>
-    ),
-  },
-  {
-    accessorKey: "icon",
-    header: "Icon",
-    cell: ({ row }) => <div className="text-xl">{row.original.icon}</div>,
-  },
+export const getColumns = ({
+  handleDelete,
+  handleEdit,
+}: {
+  handleDelete: (id: string) => void;
+  handleEdit: (data: CategoryFormValues, id?: string) => void;
+}) => [
+  { id: "id", header: "ID", cell: ({ row }: any) => row.index + 1 },
+  { accessorKey: "name", header: "Name", enableSorting: true },
+  { accessorKey: "description", header: "Description", enableSorting: true },
+  { accessorKey: "icon", header: "Icon", enableSorting: false },
   {
     accessorKey: "is_active",
     header: "Status",
-    cell: ({ row }) => (
-      <Badge variant={row.original.is_active ? "default" : "destructive"}>
-        {row.original.is_active ? "Active" : "Inactive"}
-      </Badge>
-    ),
+    cell: ({ row }: any) => (row.original.is_active ? "Active" : "Inactive"),
+    enableSorting: false,
   },
-
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => {
-      const category = row.original;
+    enableSorting: false,
+    cell: ({ row }: any) => (
+      <div className="flex gap-2">
+        <CategoryDialog
+          triggerText="Edit"
+          initialData={{
+            name: row.original.name,
+            description: row.original.description,
+            icon: row.original.icon,
+            is_active: row.original.is_active ? "active" : "inactive",
+          }}
+          categoryId={row.original.id}
+          onSubmitParent={handleEdit}
+        >
+          <Button className="flex items-center gap-2 h-10 w-12">
+            <IconPencil className="w-4 h-4" />
+          </Button>
+        </CategoryDialog>
 
-      return (
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline">
-            Edit
-          </Button>
-          <Button size="sm" variant="destructive">
-            Delete
-          </Button>
-        </div>
-      );
-    },
+        <Button
+          size="sm"
+          variant="destructive"
+          className="flex items-center gap-2 h-10 w-12"
+          onClick={() => handleDelete(row.original.id)}
+        >
+          <IconTrash className="w-4 h-4" />
+        </Button>
+      </div>
+    ),
   },
 ];

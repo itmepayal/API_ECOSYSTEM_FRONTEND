@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./globals.css";
 import { env } from "@/env";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
         <GoogleOAuthProvider clientId={env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
           <TooltipProvider>{children}</TooltipProvider>
         </GoogleOAuthProvider>
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );
