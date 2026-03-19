@@ -1,20 +1,28 @@
 import { create } from "zustand";
 import {
-  getAllCategories,
-  getCategoryById,
-  createCategory,
-  updateCategory,
-  patchCategory,
-  deleteCategory,
-} from "@/services/category-service";
-import type { CategoryForm } from "@/types/category";
+  getAllEndpoints,
+  getEndpointById,
+  createEndpoint,
+  updateEndpoint,
+  patchEndpoint,
+  deleteEndpoint,
+} from "@/services/endpoint.service";
+import { EndpointFormValues } from "@/schemas/endpoint";
 
-export interface Category {
+export interface Endpoint {
   id: string;
-  name: string;
-  description?: string;
-  icon?: string;
   is_active: boolean;
+  name: string;
+  endpoint: string;
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  description: string;
+  is_public: boolean;
+  request_schema: string;
+  response_schema: string;
+  example_request: string;
+  example_response: string;
+  rate_limit: number;
+  category: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -25,9 +33,9 @@ interface PaginationMeta {
   previous: string | null;
 }
 
-interface CategoryState {
-  categories: Category[];
-  selectedCategory: Category | null;
+interface EndpointState {
+  endpoints: Endpoint[];
+  selectedEndpoint: Endpoint | null;
   meta: PaginationMeta | null;
   currentPage: number;
 
@@ -37,31 +45,34 @@ interface CategoryState {
   search: string;
   sorting: string;
 
-  fetchCategories: (
+  fetchEndpoints: (
     url?: string,
     search?: string,
     ordering?: string
   ) => Promise<void>;
+
   setSearch: (search: string) => void;
   setSorting: (column: string, desc: boolean) => void;
 
   nextPage: () => void;
   previousPage: () => void;
 
-  addCategory: (data: CategoryForm) => Promise<boolean>;
-  editCategory: (id: string, data: CategoryForm) => Promise<boolean>;
-  patchCategoryById: (
+  addEndpoint: (data: EndpointFormValues) => Promise<boolean>;
+  editEndpoint: (id: string, data: EndpointFormValues) => Promise<boolean>;
+  patchEndpointById: (
     id: string,
-    data: Partial<CategoryForm>
+    data: Partial<EndpointFormValues>
   ) => Promise<boolean>;
-  removeCategory: (id: string) => Promise<boolean>;
+  removeEndpoint: (id: string) => Promise<boolean>;
+
+  fetchEndpointById: (id: string) => Promise<void>;
 
   clearSelected: () => void;
 }
 
-export const useCategoryStore = create<CategoryState>((set, get) => ({
-  categories: [],
-  selectedCategory: null,
+export const useEndpointStore = create<EndpointState>((set, get) => ({
+  endpoints: [],
+  selectedEndpoint: null,
   meta: null,
   currentPage: 1,
   loading: false,
@@ -69,14 +80,16 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
   search: "",
   sorting: "",
 
-  fetchCategories: async (
-    url = "/api/v1/api-catalog/categories/",
+  fetchEndpoints: async (
+    url = "/api/v1/api-catalog/endpoints/",
     search = "",
     ordering = ""
   ) => {
     set({ loading: true, error: null, search, sorting: ordering });
+
     try {
       let requestUrl = url;
+
       if (url.startsWith("http")) {
         const u = new URL(url);
         requestUrl = u.pathname + u.search;
@@ -91,16 +104,32 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
         requestUrl += (requestUrl.includes("?") ? "&" : "?") + queryString;
       }
 
-      const res = await getAllCategories(requestUrl);
+      const res = await getAllEndpoints(requestUrl);
 
       set({
-        categories: res.data.data,
+        endpoints: res.data.data,
         meta: res.data.meta,
         loading: false,
       });
     } catch (err: any) {
       set({
-        error: err.response?.data?.message || "Failed to fetch categories",
+        error: err.response?.data?.message || "Failed to fetch endpoints",
+        loading: false,
+      });
+    }
+  },
+
+  fetchEndpointById: async (id: string) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await getEndpointById(id);
+      set({
+        selectedEndpoint: res.data.data,
+        loading: false,
+      });
+    } catch (err: any) {
+      set({
+        error: err.response?.data?.message || "Failed to fetch endpoint",
         loading: false,
       });
     }
@@ -108,38 +137,40 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
 
   setSearch: (search: string) => {
     set({ currentPage: 1 });
-    get().fetchCategories(undefined, search, get().sorting);
+    get().fetchEndpoints(undefined, search, get().sorting);
   },
 
   setSorting: (column: string, desc: boolean) => {
     set({ currentPage: 1 });
     const ordering = desc ? `-${column}` : column;
-    get().fetchCategories(undefined, get().search, ordering);
+    get().fetchEndpoints(undefined, get().search, ordering);
   },
 
   nextPage: () => {
-    const { meta, fetchCategories, currentPage, search, sorting } = get();
+    const { meta, fetchEndpoints, currentPage, search, sorting } = get();
     if (!meta?.next) return;
-    fetchCategories(meta.next, search, sorting);
+    fetchEndpoints(meta.next, search, sorting);
     set({ currentPage: currentPage + 1 });
   },
 
   previousPage: () => {
-    const { meta, fetchCategories, currentPage, search, sorting } = get();
+    const { meta, fetchEndpoints, currentPage, search, sorting } = get();
     if (!meta?.previous) return;
-    fetchCategories(meta.previous, search, sorting);
+    fetchEndpoints(meta.previous, search, sorting);
     set({ currentPage: currentPage - 1 });
   },
 
-  addCategory: async (data) => {
+  addEndpoint: async (data) => {
     set({ loading: true, error: null });
     try {
-      const res = await createCategory(data);
-      const newCategory = res.data.data;
+      const res = await createEndpoint(data);
+      const newEndpoint = res.data.data;
+
       set((state) => ({
-        categories: [newCategory, ...state.categories],
+        endpoints: [newEndpoint, ...state.endpoints],
         loading: false,
       }));
+
       return true;
     } catch (err: any) {
       set({
@@ -150,18 +181,18 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
     }
   },
 
-  editCategory: async (id, data) => {
+  editEndpoint: async (id, data) => {
     set({ loading: true, error: null });
     try {
-      const res = await updateCategory(id, data);
+      const res = await updateEndpoint(id, data);
       const updated = res.data.data;
+
       set((state) => ({
-        categories: state.categories.map((cat) =>
-          cat.id === id ? updated : cat
-        ),
-        selectedCategory: updated,
+        endpoints: state.endpoints.map((ep) => (ep.id === id ? updated : ep)),
+        selectedEndpoint: updated,
         loading: false,
       }));
+
       return true;
     } catch (err: any) {
       set({
@@ -172,18 +203,18 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
     }
   },
 
-  patchCategoryById: async (id, data) => {
+  patchEndpointById: async (id, data) => {
     set({ loading: true, error: null });
     try {
-      const res = await patchCategory(id, data);
+      const res = await patchEndpoint(id, data);
       const updated = res.data.data;
+
       set((state) => ({
-        categories: state.categories.map((cat) =>
-          cat.id === id ? updated : cat
-        ),
-        selectedCategory: updated,
+        endpoints: state.endpoints.map((ep) => (ep.id === id ? updated : ep)),
+        selectedEndpoint: updated,
         loading: false,
       }));
+
       return true;
     } catch (err: any) {
       set({
@@ -194,16 +225,18 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
     }
   },
 
-  removeCategory: async (id) => {
+  removeEndpoint: async (id) => {
     set({ loading: true, error: null });
     try {
-      await deleteCategory(id);
+      await deleteEndpoint(id);
+
       set((state) => ({
-        categories: state.categories.filter((cat) => cat.id !== id),
-        selectedCategory:
-          state.selectedCategory?.id === id ? null : state.selectedCategory,
+        endpoints: state.endpoints.filter((ep) => ep.id !== id),
+        selectedEndpoint:
+          state.selectedEndpoint?.id === id ? null : state.selectedEndpoint,
         loading: false,
       }));
+
       return true;
     } catch (err: any) {
       set({
@@ -214,5 +247,5 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
     }
   },
 
-  clearSelected: () => set({ selectedCategory: null }),
+  clearSelected: () => set({ selectedEndpoint: null }),
 }));

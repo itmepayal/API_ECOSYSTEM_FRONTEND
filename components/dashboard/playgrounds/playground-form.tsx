@@ -29,7 +29,7 @@ import { Loader2 } from "lucide-react";
 
 import { MonacoEditor } from "@/components/editor/monaco-editor";
 import { PlaygroundFormValues } from "@/schemas/playground";
-import { useEndpointStore } from "@/store/endpoints-store";
+import { useEndpointStore } from "@/store/endpoint.store";
 
 interface PlaygroundFormProps {
   onSubmit: (data: PlaygroundFormValues) => void;

@@ -89,6 +89,7 @@ export const getColumns = ({
       <Button
         size="sm"
         variant="destructive"
+        className="flex items-center gap-2 h-10 w-12"
         onClick={() => handleDelete(row.original.id)}
       >
         <IconTrash className="w-4 h-4" />

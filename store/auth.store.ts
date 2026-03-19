@@ -9,7 +9,7 @@ import {
   verifyEmailAPI,
   resetPasswordAPI,
   forgotPasswordAPI,
-} from "@/services/auth-service";
+} from "@/services/auth.service";
 
 import type {
   EmailData,

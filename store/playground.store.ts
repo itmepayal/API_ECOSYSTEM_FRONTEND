@@ -5,7 +5,7 @@ import {
   createPlayground,
   deletePlayground,
   rerunPlayground,
-} from "@/services/playground-service";
+} from "@/services/playground.service";
 
 import type { PlaygroundFormValues } from "@/schemas/playground";
 

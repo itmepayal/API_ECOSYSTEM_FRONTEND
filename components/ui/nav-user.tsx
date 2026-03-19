@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import { getInitials, formatUsername } from "@/utils/format";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthStore } from "@/store/auth.store";
 
 import {
   EllipsisVerticalIcon,

@@ -5,7 +5,7 @@ import { IconMenu2, IconX, IconArrowUpRight } from "@tabler/icons-react";
 import { Logo } from "@/components/landing/navbar/logo";
 import { NavItems } from "@/components/landing/navbar/nav-items";
 import { IconButton } from "@/components/primitives/icon-button";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthStore } from "@/store/auth.store";
 
 const NavbarComponent = () => {
   const user = useAuthStore((state) => state.user);

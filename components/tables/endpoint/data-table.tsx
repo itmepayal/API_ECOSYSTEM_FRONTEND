@@ -30,7 +30,7 @@ import {
 import { IconLoader2 } from "@tabler/icons-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { useCategoryStore } from "@/store/categories-store";
+import { useEndpointStore } from "@/store/endpoint.store";
 
 interface PaginationMeta {
   count: number;
@@ -70,7 +70,7 @@ export function DataTable<TData extends { [key: string]: any }, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [searchTerm, setSearchTerm] = React.useState("");
 
-  const { setSearch, setSorting: storeSetSorting } = useCategoryStore();
+  const { setSearch, setSorting: storeSetSorting } = useEndpointStore();
 
   // -------------------
   // TABLE INSTANCE

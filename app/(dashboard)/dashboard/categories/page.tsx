@@ -8,9 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DataTable } from "@/components/tables/categories/data-table";
-import { getColumns } from "@/components/tables/categories/columns";
-import { useCategoryStore } from "@/store/categories-store";
+import { DataTable } from "@/components/tables/category/data-table";
+import { getColumns } from "@/components/tables/category/columns";
+import { useCategoryStore } from "@/store/category.store";
 import { CategoryDialog } from "@/components/dashboard/categories/category-dialog";
 import { CategoryFormValues } from "@/components/dashboard/categories/category-form";
 import { toast } from "sonner";

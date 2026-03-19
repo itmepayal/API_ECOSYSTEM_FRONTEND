@@ -30,7 +30,7 @@ import {
 import { IconLoader2 } from "@tabler/icons-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { usePlaygroundStore } from "@/store/playground-store";
+import { usePlaygroundStore } from "@/store/playground.store";
 
 interface PaginationMeta {
   count: number;

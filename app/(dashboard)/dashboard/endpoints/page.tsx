@@ -10,10 +10,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { DataTable } from "@/components/tables/endpoints/data-table";
-import { getColumns } from "@/components/tables/endpoints/colums";
+import { DataTable } from "@/components/tables/endpoint/data-table";
+import { getColumns } from "@/components/tables/endpoint/colums";
 
-import { useEndpointStore } from "@/store/endpoints-store";
+import { useEndpointStore } from "@/store/endpoint.store";
 
 import { EndpointDialog } from "@/components/dashboard/endpoints/endpoint-dialog";
 

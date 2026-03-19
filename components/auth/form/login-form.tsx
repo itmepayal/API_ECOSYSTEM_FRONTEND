@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthStore } from "@/store/auth.store";
 
 import { GoogleLoginButton } from "@/components/auth/form/google-button";
 import { InputField } from "@/components/auth/common/input-field";

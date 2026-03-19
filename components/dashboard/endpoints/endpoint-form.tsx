@@ -29,7 +29,7 @@ import { Loader2 } from "lucide-react";
 import { MonacoEditor } from "@/components/editor/monaco-editor";
 import { EndpointFormValues } from "@/schemas/endpoint";
 
-import { useCategoryStore } from "@/store/categories-store";
+import { useCategoryStore } from "@/store/category.store";
 import { useEffect } from "react";
 
 interface EndpointFormProps {

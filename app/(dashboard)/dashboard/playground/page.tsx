@@ -10,10 +10,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { getColumns } from "@/components/tables/playgrounds/colums";
-import { DataTable } from "@/components/tables/playgrounds/data-table";
+import { getColumns } from "@/components/tables/playground/colums";
+import { DataTable } from "@/components/tables/playground/data-table";
 
-import { usePlaygroundStore } from "@/store/playground-store";
+import { usePlaygroundStore } from "@/store/playground.store";
 
 import { PlaygroundDialog } from "@/components/dashboard/playgrounds/playground-dialog";
 
