@@ -2,7 +2,6 @@ import api from "@/services/api";
 import type { CategoryForm } from "@/types/category";
 
 export const getAllCategories = (url?: string) => {
-  console.log(url);
   return api.get(url || "/api/v1/api-catalog/categories/");
 };
 

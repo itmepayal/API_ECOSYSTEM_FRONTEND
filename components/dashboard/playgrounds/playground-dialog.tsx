@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState, useEffect } from "react";
+import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -18,22 +18,19 @@ import { Button } from "@/components/ui/button";
 import { IconPlus } from "@tabler/icons-react";
 import { toast } from "sonner";
 
-import { endpointSchema, EndpointFormValues } from "@/schemas/endpoint";
-import { EndpointForm } from "@/components/dashboard/endpoints/endpoints-form";
+import { playgroundSchema, PlaygroundFormValues } from "@/schemas/playground";
 
-interface EndpointDialogProps {
-  onSubmitParent: (data: EndpointFormValues, id?: string) => Promise<void>;
+import { PlaygroundForm } from "@/components/dashboard/playgrounds/playground-form";
+
+interface PlaygroundDialogProps {
+  onSubmitParent: (data: PlaygroundFormValues) => Promise<void>;
   triggerText?: string;
-  initialData?: EndpointFormValues;
-  endpointId?: string;
   children?: React.ReactNode;
 }
 
-export const EndpointDialog: FC<EndpointDialogProps> = ({
+export const PlaygroundDialog: FC<PlaygroundDialogProps> = ({
   onSubmitParent,
-  triggerText = "Add Endpoint",
-  initialData,
-  endpointId,
+  triggerText = "Add Playground",
   children,
 }) => {
   const [open, setOpen] = useState(false);
@@ -45,38 +42,47 @@ export const EndpointDialog: FC<EndpointDialogProps> = ({
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<EndpointFormValues>({
-    resolver: zodResolver(endpointSchema),
+  } = useForm<PlaygroundFormValues>({
+    resolver: zodResolver(playgroundSchema),
     defaultValues: {
-      is_active: true,
-      name: "",
-      endpoint: "",
       method: "GET",
-      description: "",
-      is_public: true,
-      request_schema: "",
-      response_schema: "",
-      example_request: "",
-      example_response: "",
-      rate_limit: 1000,
-      category: "",
+      endpoint_url: "",
+      request_body: "",
+      query_params: "",
+      request_headers: "",
+      is_active: true,
+      api: "",
     },
   });
 
-  useEffect(() => {
-    if (initialData) {
-      reset({ ...initialData });
-    }
-  }, [initialData, reset]);
-
-  const onSubmit = async (data: EndpointFormValues) => {
+  const onSubmit = async (data: PlaygroundFormValues) => {
     setIsLoading(true);
+
     try {
-      await onSubmitParent(data, endpointId);
+      const safeParse = (val?: string) => {
+        if (!val) return undefined;
+        try {
+          return JSON.parse(val);
+        } catch {
+          throw new Error("Invalid JSON");
+        }
+      };
+
+      const payload = {
+        ...data,
+        request_body: safeParse(data.request_body),
+        query_params: safeParse(data.query_params),
+        request_headers: safeParse(data.request_headers),
+      };
+
+      await onSubmitParent(payload);
+
+      toast.success("Playground created successfully");
+
       reset();
       setOpen(false);
-    } catch (err) {
-      toast.error("Failed to save endpoint.");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to create playground");
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +95,7 @@ export const EndpointDialog: FC<EndpointDialogProps> = ({
           children
         ) : (
           <Button className="flex items-center gap-2 py-2">
-            {triggerText === "Add Endpoint" && <IconPlus className="w-4 h-4" />}
+            <IconPlus className="w-4 h-4" />
             {triggerText}
           </Button>
         )}
@@ -97,17 +103,13 @@ export const EndpointDialog: FC<EndpointDialogProps> = ({
 
       <SheetContent className="w-125 sm:w-150 overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>
-            {endpointId ? "Edit Endpoint" : "Create Endpoint"}
-          </SheetTitle>
+          <SheetTitle>Create Playground</SheetTitle>
           <SheetDescription>
-            {endpointId
-              ? "Update endpoint details below."
-              : "Add a new API endpoint below and click save."}
+            Add a new API playground and test your endpoint.
           </SheetDescription>
         </SheetHeader>
 
-        <EndpointForm
+        <PlaygroundForm
           onSubmit={onSubmit}
           control={control}
           register={register}
@@ -116,6 +118,7 @@ export const EndpointDialog: FC<EndpointDialogProps> = ({
           isLoading={isLoading}
         />
 
+        {/* Cancel */}
         <div className="mt-2 mb-5 px-4">
           <SheetClose asChild>
             <Button variant="outline" className="w-full">

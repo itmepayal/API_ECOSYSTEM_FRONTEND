@@ -1,4 +1,4 @@
-import { EndpointDialog } from "@/components/dashboard/endpoints/endpoints-dialog";
+import { EndpointDialog } from "@/components/dashboard/endpoints/endpoint-dialog";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

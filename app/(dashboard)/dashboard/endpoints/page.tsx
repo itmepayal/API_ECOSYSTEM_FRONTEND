@@ -15,7 +15,7 @@ import { getColumns } from "@/components/tables/endpoints/colums";
 
 import { useEndpointStore } from "@/store/endpoints-store";
 
-import { EndpointDialog } from "@/components/dashboard/endpoints/endpoints-dialog";
+import { EndpointDialog } from "@/components/dashboard/endpoints/endpoint-dialog";
 
 import { toast } from "sonner";
 import { EndpointFormValues } from "@/schemas/endpoint";
