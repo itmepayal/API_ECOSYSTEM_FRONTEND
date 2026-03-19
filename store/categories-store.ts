@@ -6,7 +6,7 @@ import {
   updateCategory,
   patchCategory,
   deleteCategory,
-} from "@/services/categoryService";
+} from "@/services/category-service";
 import type { CategoryForm } from "@/types/category";
 
 export interface Category {

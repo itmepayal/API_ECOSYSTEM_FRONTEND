@@ -2,7 +2,7 @@
 
 import { GoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store/auth-store";
 import type { AlertHandlers } from "@/types/auth";
 
 export const GoogleLoginButton = ({ setSuccess, setError }: AlertHandlers) => {

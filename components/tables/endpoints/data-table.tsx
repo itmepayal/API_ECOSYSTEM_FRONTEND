@@ -30,7 +30,7 @@ import {
 import { IconLoader2 } from "@tabler/icons-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { useCategoryStore, Category } from "@/store/categories-store";
+import { useEndpointStore } from "@/store/endpoints-store";
 
 interface PaginationMeta {
   count: number;
@@ -70,7 +70,7 @@ export function DataTable<TData extends { [key: string]: any }, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [searchTerm, setSearchTerm] = React.useState("");
 
-  const { setSearch, setSorting: storeSetSorting } = useCategoryStore();
+  const { setSearch, setSorting: storeSetSorting } = useEndpointStore();
 
   // -------------------
   // TABLE INSTANCE
@@ -126,16 +126,16 @@ export function DataTable<TData extends { [key: string]: any }, TValue>({
       </div>
 
       {/* ================= TABLE ================= */}
-      <div className="overflow-hidden rounded-md border border-gray-300">
+      <div className="overflow-hidden rounded-md border">
         <Table className="table-fixed border-collapse w-full">
           {/* HEADER */}
-          <TableHeader className="bg-gray-50 border-b border-gray-300">
+          <TableHeader className="border-b">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="border-r last:border-r-0 border-gray-300 cursor-pointer"
+                    className="border-r last:border-r-0 cursor-pointer"
                     onClick={
                       header.column.getCanSort()
                         ? () => header.column.toggleSorting()
@@ -174,14 +174,11 @@ export function DataTable<TData extends { [key: string]: any }, TValue>({
               </TableRow>
             ) : table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  className="hover:bg-gray-50 border-b border-gray-300 last:border-b-0"
-                >
+                <TableRow key={row.id} className="border-b last:border-b-0">
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="border-r last:border-r-0 border-gray-300"
+                      className="border-r last:border-r-0"
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
