@@ -2,6 +2,7 @@ import { CategoryDialog } from "@/components/dashboard/categories/category-dialo
 import { CategoryFormValues } from "@/components/dashboard/categories/category-form";
 import { Button } from "@/components/ui/button";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
+import * as LucideIcons from "lucide-react";
 
 export const getColumns = ({
   handleDelete,
@@ -10,16 +11,59 @@ export const getColumns = ({
   handleDelete: (id: string) => void;
   handleEdit: (data: CategoryFormValues, id?: string) => void;
 }) => [
-  { id: "id", header: "ID", cell: ({ row }: any) => row.index + 1 },
-  { accessorKey: "name", header: "Name", enableSorting: true },
-  { accessorKey: "description", header: "Description", enableSorting: true },
-  { accessorKey: "icon", header: "Icon", enableSorting: false },
+  {
+    id: "id",
+    header: "ID",
+    cell: ({ row }: any) => row.index + 1,
+  },
+
+  {
+    accessorKey: "name",
+    header: "Name",
+    enableSorting: true,
+  },
+
+  {
+    accessorKey: "description",
+    header: "Description",
+    enableSorting: true,
+    cell: ({ row }: any) => (
+      <span className="block max-w-50 truncate">
+        {row.original.description}
+      </span>
+    ),
+  },
+
+  {
+    accessorKey: "icon",
+    header: "Icon",
+    enableSorting: false,
+    cell: ({ row }: any) => {
+      const iconName = row.original.icon;
+
+      // Get icon dynamically from lucide-react
+      const IconComponent = (LucideIcons as any)[iconName];
+
+      return IconComponent ? (
+        <IconComponent className="w-5 h-5" />
+      ) : (
+        <span className="text-sm text-gray-500">{iconName}</span>
+      );
+    },
+  },
+
   {
     accessorKey: "is_active",
     header: "Status",
-    cell: ({ row }: any) => (row.original.is_active ? "Active" : "Inactive"),
     enableSorting: false,
+    cell: ({ row }: any) =>
+      row.original.is_active ? (
+        <span className="text-green-600 font-medium">Active</span>
+      ) : (
+        <span className="text-red-500 font-medium">Inactive</span>
+      ),
   },
+
   {
     id: "actions",
     header: "Actions",
