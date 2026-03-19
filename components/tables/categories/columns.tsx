@@ -39,10 +39,15 @@ export const getColumns = ({
     header: "Icon",
     enableSorting: false,
     cell: ({ row }: any) => {
-      const iconName = row.original.icon;
+      let iconName = row.original.icon;
 
-      // Get icon dynamically from lucide-react
-      const IconComponent = (LucideIcons as any)[iconName];
+      // Convert "bar-chart" → "BarChart"
+      const formattedIconName = iconName
+        .split("-")
+        .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join("");
+
+      const IconComponent = (LucideIcons as any)[formattedIconName];
 
       return IconComponent ? (
         <IconComponent className="w-5 h-5" />
@@ -58,9 +63,11 @@ export const getColumns = ({
     enableSorting: false,
     cell: ({ row }: any) =>
       row.original.is_active ? (
-        <span className="text-green-600 font-medium">Active</span>
+        <div className="bg-green-600/50 text-white text-3xl font-medium">
+          Active
+        </div>
       ) : (
-        <span className="text-red-500 font-medium">Inactive</span>
+        <div className="text-red-500 font-medium">Inactive</div>
       ),
   },
 
