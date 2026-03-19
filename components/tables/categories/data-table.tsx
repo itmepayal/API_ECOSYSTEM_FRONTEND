@@ -129,7 +129,7 @@ export function DataTable<TData extends { [key: string]: any }, TValue>({
       <div className="overflow-hidden rounded-md border border-gray-300">
         <Table className="table-fixed border-collapse w-full">
           {/* HEADER */}
-          <TableHeader className="bg-gray-50 border-b border-gray-300">
+          <TableHeader className="border-b border-gray-300">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -176,7 +176,7 @@ export function DataTable<TData extends { [key: string]: any }, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="hover:bg-gray-50 border-b border-gray-300 last:border-b-0"
+                  className="border-b border-gray-300 last:border-b-0"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
