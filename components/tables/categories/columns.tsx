@@ -1,5 +1,6 @@
 import { CategoryDialog } from "@/components/dashboard/categories/category-dialog";
 import { CategoryFormValues } from "@/components/dashboard/categories/category-form";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import * as LucideIcons from "lucide-react";
@@ -63,11 +64,9 @@ export const getColumns = ({
     enableSorting: false,
     cell: ({ row }: any) =>
       row.original.is_active ? (
-        <div className="bg-green-600/50 text-white text-3xl font-medium">
-          Active
-        </div>
+        <Badge variant="default">Active</Badge>
       ) : (
-        <div className="text-red-500 font-medium">Inactive</div>
+        <Badge variant="destructive">Inactive</Badge>
       ),
   },
 
