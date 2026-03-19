@@ -30,7 +30,7 @@ export const getColumns = ({
     header: "Endpoint",
     enableSorting: true,
     cell: ({ row }: any) => (
-      <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+      <span className="font-mono block max-w-60 truncate text-xs px-2 py-1 rounded bg-muted">
         {row.original.endpoint}
       </span>
     ),
