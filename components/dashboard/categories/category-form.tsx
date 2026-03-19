@@ -28,7 +28,7 @@ export type CategoryFormValues = {
   name: string;
   description: string;
   icon: string;
-  is_active: "active" | "inactive"; // form uses string
+  is_active: "active" | "inactive";
 };
 
 interface CategoryFormProps {
@@ -87,8 +87,8 @@ export const CategoryForm: FC<CategoryFormProps> = ({
             control={control}
             name="is_active"
             render={({ field }) => (
-              <Select {...field}>
-                <SelectTrigger className="w-full max-w-48">
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>

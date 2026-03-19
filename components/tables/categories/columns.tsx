@@ -42,7 +42,6 @@ export const getColumns = ({
     cell: ({ row }: any) => {
       let iconName = row.original.icon;
 
-      // Convert "bar-chart" → "BarChart"
       const formattedIconName = iconName
         .split("-")
         .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1))
